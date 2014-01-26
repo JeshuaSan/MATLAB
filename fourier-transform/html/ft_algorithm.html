@@ -1,0 +1,191 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ft_algorithm</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-01-26"><meta name="DC.source" content="ft_algorithm.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Imagen</a></li><li><a href="#3">Transformada de Fourier Discreta</a></li><li><a href="#4">Zero Padding</a></li><li><a href="#5">Cuadrantes</a></li><li><a href="#6">Transformada de Fourier Manual</a></li><li><a href="#7">Transformada Inversa de Fourier</a></li><li><a href="#8">Transformada Inversa de Fourier Manual</a></li></ul></div><pre class="codeinput">clc
+clear
+</pre><h2>Imagen<a name="2"></a></h2><pre class="codeinput">f = zeros(30,30);
+f(5:24, 13:17) = 1;
+<span class="comment">%f=imread('Lena.bmp')</span>
+imshow(f,<span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>)
+</pre><img vspace="5" hspace="5" src="ft_algorithm_01.png" alt=""> <h2>Transformada de Fourier Discreta<a name="3"></a></h2><pre class="codeinput">F = fft2(f);
+F_D = log(abs(F));
+imshow(F_D,[-1 5], <span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>);
+colormap(jet); colorbar
+</pre><img vspace="5" hspace="5" src="ft_algorithm_02.png" alt=""> <h2>Zero Padding<a name="4"></a></h2><pre class="codeinput">F = fft2(f,256,256);
+F_ZP = log(abs(F));
+imshow(F_ZP,[-1 5], <span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>);
+colormap(jet); colorbar
+</pre><img vspace="5" hspace="5" src="ft_algorithm_03.png" alt=""> <h2>Cuadrantes<a name="5"></a></h2><pre class="codeinput">F = fft2(f,256,256);
+F_C = fftshift(F);
+F_C = log(abs(F_C));
+imshow(F_C,[-1 5], <span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>);
+colormap(jet); colorbar
+</pre><img vspace="5" hspace="5" src="ft_algorithm_04.png" alt=""> <h2>Transformada de Fourier Manual<a name="6"></a></h2><pre class="codeinput">i=sqrt(-1);
+[M,N]=size(f);
+
+<span class="keyword">for</span> u=1:M
+  <span class="keyword">for</span> v=1:N;
+      F_M(u,v)=0;
+      <span class="keyword">for</span> x=1:M
+          <span class="keyword">for</span> y=1:N,
+              F_M(u,v) = F_M(u,v) + f(x,y)*exp(-2*pi*i*((u-1)*(x-1)/M+(v-1)*(y-1)/N));
+          <span class="keyword">end</span>
+      <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+F_log = log(abs(F_M));
+imshow(F_log,[-1 5], <span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>);
+colormap(jet); colorbar
+</pre><img vspace="5" hspace="5" src="ft_algorithm_05.png" alt=""> <h2>Transformada Inversa de Fourier<a name="7"></a></h2><pre class="codeinput">f_t = ifft2(F_M);
+imshow(f_t,<span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>)
+</pre><pre class="codeoutput">Warning: Displaying real part of complex input. 
+</pre><img vspace="5" hspace="5" src="ft_algorithm_06.png" alt=""> <h2>Transformada Inversa de Fourier Manual<a name="8"></a></h2><pre class="codeinput">i=sqrt(-1);
+[M,N]=size(f);
+
+<span class="keyword">for</span> x=1:M
+  <span class="keyword">for</span> y=1:N;
+      f_m(u,v)=0;
+      <span class="keyword">for</span> u=1:M
+        <span class="keyword">for</span> v=1:N;
+            f_m(x,y) = f_m(x,y) + F_M(u,v)*exp(2*pi*i*((u-1)*(x-1)/M+(v-1)*(y-1)/N));
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+f_m = (1/M*N)*f_m;
+imshow(f_m,<span class="string">'InitialMagnification'</span>,<span class="string">'fit'</span>)
+</pre><pre class="codeoutput">Warning: Displaying real part of complex input. 
+</pre><img vspace="5" hspace="5" src="ft_algorithm_07.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+clc
+clear
+
+%% Imagen
+f = zeros(30,30);
+f(5:24, 13:17) = 1;
+%f=imread('Lena.bmp')
+imshow(f,'InitialMagnification','fit')
+
+%% Transformada de Fourier Discreta
+F = fft2(f);
+F_D = log(abs(F));
+imshow(F_D,[-1 5], 'InitialMagnification','fit');
+colormap(jet); colorbar
+
+%% Zero Padding
+F = fft2(f,256,256);
+F_ZP = log(abs(F));
+imshow(F_ZP,[-1 5], 'InitialMagnification','fit');
+colormap(jet); colorbar
+
+%% Cuadrantes
+F = fft2(f,256,256);
+F_C = fftshift(F);
+F_C = log(abs(F_C));
+imshow(F_C,[-1 5], 'InitialMagnification','fit');
+colormap(jet); colorbar
+
+
+%% Transformada de Fourier Manual
+i=sqrt(-1);
+[M,N]=size(f);
+
+for u=1:M
+  for v=1:N;
+      F_M(u,v)=0;
+      for x=1:M
+          for y=1:N,
+              F_M(u,v) = F_M(u,v) + f(x,y)*exp(-2*pi*i*((u-1)*(x-1)/M+(v-1)*(y-1)/N));
+          end
+      end
+  end
+end
+
+F_log = log(abs(F_M));
+imshow(F_log,[-1 5], 'InitialMagnification','fit');
+colormap(jet); colorbar
+
+%% Transformada Inversa de Fourier
+f_t = ifft2(F_M);
+imshow(f_t,'InitialMagnification','fit')
+
+%% Transformada Inversa de Fourier Manual
+i=sqrt(-1);
+[M,N]=size(f);
+
+for x=1:M
+  for y=1:N;
+      f_m(u,v)=0;
+      for u=1:M
+        for v=1:N;
+            f_m(x,y) = f_m(x,y) + F_M(u,v)*exp(2*pi*i*((u-1)*(x-1)/M+(v-1)*(y-1)/N));
+        end
+      end
+  end
+end
+
+f_m = (1/M*N)*f_m;
+imshow(f_m,'InitialMagnification','fit')
+            
+            
+            
+            
+##### SOURCE END #####
+--></body></html>

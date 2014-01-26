@@ -8,7 +8,7 @@ colorClass = {'r','g','b','m'};
 trainData = rand(2,nTrainData);
 
 % Clases
-trainClass = randi(4,1,nTrainData); % 50 numeros entre 1 y 4
+trainClass = randi(4,1,nTrainData); % 80 numeros entre 1 y 4
 
 %% Variables
 K = 6;
