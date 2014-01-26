@@ -1,0 +1,201 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>knn_example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-01-26"><meta name="DC.source" content="knn_example.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Datos</a></li><li><a href="#3">Variables</a></li><li><a href="#4">Grafica</a></li><li><a href="#5">Prueba</a></li><li><a href="#6">Clasificacion</a></li><li><a href="#7">Grafica</a></li><li><a href="#8">Patch</a></li></ul></div><pre class="codeinput">clc
+clear <span class="string">all</span>
+</pre><h2>Datos<a name="2"></a></h2><pre class="codeinput">nTrainData = 80;
+colorClass = {<span class="string">'r'</span>,<span class="string">'g'</span>,<span class="string">'b'</span>,<span class="string">'m'</span>};
+<span class="comment">% Entrenamiento</span>
+trainData = rand(2,nTrainData);
+
+<span class="comment">% Clases</span>
+trainClass = randi(4,1,nTrainData); <span class="comment">% 50 numeros entre 1 y 4</span>
+</pre><h2>Variables<a name="3"></a></h2><pre class="codeinput">K = 6;
+
+[~, trainM] = size(trainData);
+
+Class = unique(trainClass);
+nClass = length(Class);
+</pre><h2>Grafica<a name="4"></a></h2><p>Entrenamiento</p><pre class="codeinput">figure(1);
+<span class="keyword">for</span> i=1:trainM
+    A = trainData(:, i);
+    trainPlot = plot(A(1,:), A(2,:),<span class="string">'o'</span>,<span class="keyword">...</span>
+        <span class="string">'MarkerEdgeColor'</span>, <span class="string">'k'</span>,<span class="keyword">...</span>
+        <span class="string">'MarkerFaceColor'</span>, colorClass{trainClass(i)},<span class="keyword">...</span>
+        <span class="string">'MarkerSize'</span>, 7);
+    hold <span class="string">on</span>;
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="knn_example_01.png" alt=""> <h2>Prueba<a name="5"></a></h2><pre class="codeinput">[x,y] = getpts(gcf);
+testData = [x,y]';
+[~, testM]  = size(testData);
+</pre><h2>Clasificacion<a name="6"></a></h2><pre class="codeinput">[K_NN, testClass] = knn(trainData, trainClass, testData, K);
+</pre><h2>Grafica<a name="7"></a></h2><p>Prueba</p><pre class="codeinput"><span class="keyword">for</span> i=1:testM
+    A = testData(:, i);
+    testPlot = plot(A(1,:), A(2,:), <span class="string">'s'</span>,<span class="keyword">...</span>
+        <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+        <span class="string">'MarkerEdgeColor'</span>, <span class="string">'k'</span>,<span class="keyword">...</span>
+        <span class="string">'MarkerFaceColor'</span>,colorClass{testClass(i)},<span class="keyword">...</span>
+        <span class="string">'MarkerSize'</span>, 10);
+    hold <span class="string">on</span>;
+<span class="keyword">end</span>
+legend([trainPlot, testPlot],<span class="string">'Train'</span>, <span class="string">'Test'</span>,<span class="keyword">...</span>
+    <span class="string">'Location'</span>,<span class="string">'NorthEastOutside'</span>);
+title(<span class="string">'K-Nearest Neighbor'</span>);
+hold <span class="string">off</span>;
+</pre><img vspace="5" hspace="5" src="knn_example_02.png" alt=""> <h2>Patch<a name="8"></a></h2><pre class="codeinput"><span class="keyword">for</span> i=1:testM
+    <span class="comment">% Vertices</span>
+    puntos(:,:,i) = [testData(:,i)'; K_NN(:,:,i)'];
+    verts = puntos(:,:,i);
+    <span class="comment">% Distancia</span>
+    <span class="keyword">for</span> j=2:K+1
+        dist = [1 j];
+
+    <span class="comment">% Propiedades de patch</span>
+    distancia.Vertices = verts;
+    distancia.Faces = dist;
+    distancia.FaceColor = <span class="string">'none'</span>;
+    distancia.LineStyle = <span class="string">':'</span>;
+    distancia.Edgecolor = <span class="string">'black'</span>;
+    distancia.LineWidth = 1;
+
+    patch(distancia);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="knn_example_03.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+clc
+clear all
+
+%% Datos
+nTrainData = 80;
+colorClass = {'r','g','b','m'};
+% Entrenamiento
+trainData = rand(2,nTrainData);
+
+% Clases
+trainClass = randi(4,1,nTrainData); % 50 numeros entre 1 y 4
+
+%% Variables
+K = 6;
+
+[~, trainM] = size(trainData);
+
+Class = unique(trainClass);
+nClass = length(Class);
+
+%% Grafica
+% Entrenamiento
+figure(1);
+for i=1:trainM
+    A = trainData(:, i);
+    trainPlot = plot(A(1,:), A(2,:),'o',...
+        'MarkerEdgeColor', 'k',...
+        'MarkerFaceColor', colorClass{trainClass(i)},...
+        'MarkerSize', 7);
+    hold on;
+end
+
+
+%% Prueba
+[x,y] = getpts(gcf);
+testData = [x,y]';
+[~, testM]  = size(testData);
+
+%% Clasificacion
+[K_NN, testClass] = knn(trainData, trainClass, testData, K);
+
+%% Grafica
+% Prueba
+for i=1:testM
+    A = testData(:, i);
+    testPlot = plot(A(1,:), A(2,:), 's',...
+        'LineWidth',2,...
+        'MarkerEdgeColor', 'k',...
+        'MarkerFaceColor',colorClass{testClass(i)},...
+        'MarkerSize', 10);
+    hold on;
+end
+legend([trainPlot, testPlot],'Train', 'Test',...
+    'Location','NorthEastOutside');
+title('K-Nearest Neighbor');
+hold off;
+
+%% Patch
+
+for i=1:testM
+    % Vertices
+    puntos(:,:,i) = [testData(:,i)'; K_NN(:,:,i)'];
+    verts = puntos(:,:,i);
+    % Distancia
+    for j=2:K+1
+        dist = [1 j];
+
+    % Propiedades de patch
+    distancia.Vertices = verts;
+    distancia.Faces = dist;
+    distancia.FaceColor = 'none';
+    distancia.LineStyle = ':';
+    distancia.Edgecolor = 'black';
+    distancia.LineWidth = 1;
+
+    patch(distancia);
+    end
+end
+
+##### SOURCE END #####
+--></body></html>
