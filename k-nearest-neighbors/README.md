@@ -1,7 +1,7 @@
 # K-nearest neighbors
 
 ### Description:
-An implementation of the K-newares neighbors algorithm
+An implementation of the K-nearest neighbors algorithm
 
 ### Files
 - *knn.m* :
